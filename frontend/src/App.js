@@ -14,11 +14,15 @@ export default function App($app) {
     return "";
   };
 
+  const path = window.location.pathname;
+  // Handle various root paths (e.g., '/', '/index.html', '/frontend/index.html')
+  const isRoot = path === "/" || path.includes("index.html");
+  
   this.state = {
-    type: window.location.pathname.replace("/", ""),
+    type: isRoot ? "" : path.replace(/^\//, ""), // Remove leading slash only
     pokemonList: [],
     searchWord: getSearchWord(),
-    currentPage: window.location.pathname,
+    currentPage: path,
   };
 
   // Header
@@ -55,6 +59,8 @@ export default function App($app) {
 
   // PokemonList
   const renderPokemonList = () => {
+    $app.innerHTML = ""; // Clear screen just before rendering list
+    renderHeader();
     new PokemonList({
       $app,
       initialState: this.state.pokemonList,
@@ -84,7 +90,39 @@ export default function App($app) {
   const renderPokemonDetail = async (pokemonNo) => {
     try {
       const pokemonDetailData = await getPokemonDetail(pokemonNo);
-      new PokemonDetail({ $app, initialState: pokemonDetailData });
+      
+      $app.innerHTML = "";
+      renderHeader();
+
+      new PokemonDetail({ 
+        $app, 
+        initialState: pokemonDetailData,
+        handlePrev: (currentId) => {
+            const prevId = currentId - 1;
+            if (prevId > 0) {
+                history.pushState(null, `No.${prevId}`, `/detail/${prevId}`);
+                this.setState({
+                    ...this.state,
+                    currentPage: `/detail/${prevId}`
+                });
+            }
+        },
+        handleNext: (currentId) => {
+            const nextId = currentId + 1;
+            history.pushState(null, `No.${nextId}`, `/detail/${nextId}`);
+            this.setState({
+                ...this.state,
+                currentPage: `/detail/${nextId}`
+            });
+        },
+        handleBack: () => {
+            history.pushState(null, null, `/`);
+            this.setState({
+                ...this.state,
+                currentPage: `/`
+            });
+        }
+      });
     } catch (error) {
       console.log(error);
     }
@@ -92,13 +130,12 @@ export default function App($app) {
 
   const render = async () => {
     const path = this.state.currentPage;
-    $app.innerHTML = "";
+    // Removed global $app.innerHTML = "" to prevent flickering
+    
     if (path.startsWith("/detail/")) {
       const pokemonNo = path.split("/detail/")[1];
-      renderHeader();
-      renderPokemonDetail(pokemonNo);
+      await renderPokemonDetail(pokemonNo);
     } else {
-      renderHeader();
       renderPokemonList();
     }
   };
