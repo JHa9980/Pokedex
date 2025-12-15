@@ -14,27 +14,28 @@ export default function PokemonDetail({ $app, initialState }) {
       temp = `
         <div class="detail-wrapper">
             <div class="left-wrapper">
-                <img src="${pokemonData.img}"></img>
+                <img src="${pokemonData.img}" alt="${pokemonData.name}">
             </div>
             <div class="right-wrapper">
-                <div class="pokemon-info">
-                    <div class="index">No.${pokemonData.id}</div>
-                    <div class="name">${pokemonData.name}</div>                 
-                    <div class="type">${setPokemonType(pokemonData.type)}</div>
-                    <div class="description">${pokemonData.description}</div>
+                <div class="detail-header">
+                    <h1 class="name">${pokemonData.name}</h1>
+                    <span class="index">#${pokemonData.id}</span>
                 </div>
+                <div class="type">${setPokemonType(pokemonData.type)}</div>
+                <p class="description">${pokemonData.description}</p>
+                
                 <div class="detail-info">
                     <div>
-                        <div class="label">키</div>
-                        <div class="info">${pokemonData.height}m</div>
+                        <span class="label">Height</span>
+                        <span class="info">${pokemonData.height}m</span>
                     </div>
                     <div>
-                        <div class="label">분류</div>
-                        <div class="info">${pokemonData.info}</div>
+                        <span class="label">Category</span>
+                        <span class="info">${pokemonData.info}</span>
                     </div>
                     <div>
-                        <div class="label">몸무게</div>
-                        <div class="info">${pokemonData.weight}kg</div>
+                        <span class="label">Weight</span>
+                        <span class="info">${pokemonData.weight}kg</span>
                     </div>
                 </div>
             </div>
